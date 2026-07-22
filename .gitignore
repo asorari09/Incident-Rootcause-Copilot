@@ -1,0 +1,32 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+AGENTS.override.md
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Node
+node_modules/
+apps/web/dist/
+
+# Runtime data
+data/chroma/*
+!data/chroma/.gitkeep
+data/outbox/*
+!data/outbox/.gitkeep
+*.sqlite3
+
+# OS and editor files
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,12 @@
+{
+  "id": "sc_dependency_outage",
+  "expected_root_cause": "upstream_dependency_outage",
+  "description": "A downstream dependency returns 503s while local CPU remains flat.",
+  "runbook_hint": "dependency-outage",
+  "log_file": "logs/sc_dependency_outage.log",
+  "metrics": {
+    "dependency_error_rate": {"baseline": 0.005, "variation": 0.0005, "event_values": [0.02, 0.08, 0.2, 0.4]},
+    "error_rate": {"baseline": 0.01, "variation": 0.001, "event_values": [0.015, 0.04, 0.09, 0.18]},
+    "cpu_util": {"baseline": 0.4, "variation": 0.015, "event_values": [0.4, 0.41, 0.4, 0.41]}
+  }
+}

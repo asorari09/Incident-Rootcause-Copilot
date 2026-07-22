@@ -1,0 +1,12 @@
+{
+  "id": "sc_memory_leak",
+  "expected_root_cause": "memory_leak_after_deploy",
+  "description": "Process RSS climbs after a deploy and garbage collection pauses increase.",
+  "runbook_hint": "oom-memory",
+  "log_file": "logs/sc_memory_leak.log",
+  "metrics": {
+    "rss": {"baseline": 500, "variation": 3, "trend_per_point": 2, "event_values": [760, 900, 1080, 1320]},
+    "gc_pause": {"baseline": 30, "variation": 2, "event_values": [45, 80, 220, 480]},
+    "error_rate": {"baseline": 0.01, "variation": 0.001, "event_values": [0.01, 0.01, 0.012, 0.015]}
+  }
+}

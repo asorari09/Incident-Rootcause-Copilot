@@ -1,0 +1,12 @@
+{
+  "id": "sc_noise_false_alarm",
+  "expected_root_cause": null,
+  "description": "A brief error blip recovers within the normal observation window.",
+  "runbook_hint": "none",
+  "log_file": "logs/sc_noise_false_alarm.log",
+  "metrics": {
+    "error_rate": {"baseline": 0.01, "variation": 0.001, "event_values": [0.01, 0.06, 0.012, 0.01]},
+    "latency_p95": {"baseline": 120, "variation": 4, "event_values": [122, 145, 124, 121]},
+    "db_pool_util": {"baseline": 0.55, "variation": 0.02, "event_values": [0.56, 0.58, 0.55, 0.56]}
+  }
+}

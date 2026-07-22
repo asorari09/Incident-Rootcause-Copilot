@@ -1,0 +1,13 @@
+{
+  "id": "sc_bad_deploy",
+  "expected_root_cause": "regressive_deploy",
+  "description": "A deployment is followed by an immediate latency cliff.",
+  "runbook_hint": "bad-deploy",
+  "log_file": "logs/sc_bad_deploy.log",
+  "patch_template": "Revert the pre-authored demo regression patch after human review.",
+  "metrics": {
+    "latency_p95": {"baseline": 110, "variation": 3, "event_values": [125, 320, 700, 1100]},
+    "error_rate": {"baseline": 0.01, "variation": 0.001, "event_values": [0.012, 0.025, 0.07, 0.11]},
+    "cpu_util": {"baseline": 0.42, "variation": 0.02, "event_values": [0.43, 0.43, 0.44, 0.44]}
+  }
+}

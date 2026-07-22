@@ -1,0 +1,13 @@
+{
+  "id": "sc_db_pool",
+  "expected_root_cause": "db_connection_pool_exhaustion",
+  "description": "API errors rise after traffic saturates the database connection pool.",
+  "runbook_hint": "db-pool",
+  "log_file": "logs/sc_db_pool.log",
+  "metrics": {
+    "error_rate": {"baseline": 0.01, "variation": 0.001, "event_values": [0.02, 0.04, 0.12, 0.25]},
+    "latency_p95": {"baseline": 120, "variation": 4, "event_values": [140, 180, 350, 700]},
+    "db_pool_util": {"baseline": 0.55, "variation": 0.02, "event_values": [0.7, 0.84, 0.92, 0.96]},
+    "cpu_util": {"baseline": 0.45, "variation": 0.02, "event_values": [0.47, 0.48, 0.48, 0.49]}
+  }
+}
