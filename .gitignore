@@ -25,6 +25,8 @@ data/chroma/*
 data/outbox/*
 !data/outbox/.gitkeep
 *.sqlite3
+evals/out/*
+!evals/out/.gitkeep
 
 # OS and editor files
 .DS_Store

@@ -16,7 +16,7 @@ from ir_copilot.scenarios import ScenarioEngine
 
 from .build import GraphDependencies, build_graph, default_llm
 from .llm import FakeLLM, StructuredLLM
-from .observability import langfuse_callbacks
+from .observability import finalize_langfuse_run, langfuse_callbacks
 from .state import IncidentState
 from .tools import ToolContext
 
@@ -67,11 +67,18 @@ def run_incident(
         config={
             "callbacks": callbacks,
             "recursion_limit": 8,
-            "metadata": {"scenario_id": scenario_id, "langfuse_session_id": state["incident_id"]},
+            "metadata": {
+                "scenario_id": scenario_id,
+                "incident_id": state["incident_id"],
+                "langfuse_session_id": state["incident_id"],
+                "app_version": settings.app_version,
+            },
             "tags": ["ir-copilot", scenario_id or "ad_hoc"],
         },
     )
-    return dict(result)
+    output = dict(result)
+    finalize_langfuse_run(callbacks, output)
+    return output
 
 
 def _default_retriever() -> RunbookRetriever | None:

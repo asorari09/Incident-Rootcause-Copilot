@@ -12,6 +12,7 @@ ALLOWED_OPENAI_MODELS = {"gpt-4o-mini"}
 @dataclass(frozen=True)
 class AppSettings:
     openai_api_key: str | None
+    app_version: str = "0.1.0"
     openai_model: str = "gpt-4o-mini"
     max_llm_calls_per_run: int = 3
     llm_temperature: float = 0.0
@@ -33,6 +34,7 @@ class AppSettings:
         values = os.environ if environ is None else environ
         return cls(
             openai_api_key=values.get("OPENAI_API_KEY") or None,
+            app_version=values.get("APP_VERSION", "0.1.0"),
             openai_model=values.get("OPENAI_MODEL", "gpt-4o-mini"),
             max_llm_calls_per_run=int(values.get("MAX_LLM_CALLS_PER_RUN", "3")),
             llm_temperature=float(values.get("LLM_TEMPERATURE", "0")),

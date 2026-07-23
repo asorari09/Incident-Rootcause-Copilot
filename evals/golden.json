@@ -1,0 +1,42 @@
+[
+  {
+    "scenario_id": "sc_db_pool",
+    "expected_root_cause": "db_connection_pool_exhaustion",
+    "expect_github_draft": true,
+    "max_llm_calls": 3,
+    "max_cost_usd": 0.03,
+    "notes": "Composite database-pool saturation should produce a high-severity draft issue."
+  },
+  {
+    "scenario_id": "sc_memory_leak",
+    "expected_root_cause": "memory_leak_after_deploy",
+    "expect_github_draft": true,
+    "max_llm_calls": 3,
+    "max_cost_usd": 0.03,
+    "notes": "Gradual RSS and GC-pause signal."
+  },
+  {
+    "scenario_id": "sc_bad_deploy",
+    "expected_root_cause": "regressive_deploy",
+    "expect_github_draft": true,
+    "max_llm_calls": 3,
+    "max_cost_usd": 0.03,
+    "notes": "Latency step follows the synthetic deployment marker."
+  },
+  {
+    "scenario_id": "sc_dependency_outage",
+    "expected_root_cause": "upstream_dependency_outage",
+    "expect_github_draft": true,
+    "max_llm_calls": 3,
+    "max_cost_usd": 0.03,
+    "notes": "Downstream errors rise while local CPU stays flat."
+  },
+  {
+    "scenario_id": "sc_noise_false_alarm",
+    "expected_root_cause": null,
+    "expect_github_draft": false,
+    "max_llm_calls": 0,
+    "max_cost_usd": 0.0,
+    "notes": "Recovered noise must be skipped by the deterministic gate."
+  }
+]

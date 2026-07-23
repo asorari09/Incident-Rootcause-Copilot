@@ -8,7 +8,7 @@ diagnosis in runbooks and GitHub context. Remediation is always draft-only.
 
 ## Status
 
-Phase 5 API checkpoint. Follow the authoritative
+Phase 7 evals and observability checkpoint. Follow the authoritative
 [`END_TO_END_PLAN.md`](END_TO_END_PLAN.md) for the phased build and design.
 
 ## Local setup
@@ -36,3 +36,20 @@ Open the Vite URL (normally `http://127.0.0.1:5173`), select `sc_db_pool`, then
 click **Inject** and **Run incident**. The dashboard uses Vite's local API proxy
 by default. Set `VITE_API_BASE_URL` only when pointing the dashboard at an
 explicit API origin.
+
+## Evals & observability
+
+Run the offline golden scenarios with no OpenAI key or network dependency:
+
+```sh
+make eval
+```
+
+The harness writes its local report to `evals/out/report.json` and requires at
+least 4/5 exact root-cause matches plus a zero-LLM-call skip for the noise case.
+
+Langfuse is optional. To enable it, set `LANGFUSE_ENABLED=true` plus
+`LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and (if self-hosted)
+`LANGFUSE_HOST` in your uncommitted `.env`. Graph runs then include scenario,
+incident, app-version, final status, and LLM-call metadata. Without keys,
+tracing is a no-op.
