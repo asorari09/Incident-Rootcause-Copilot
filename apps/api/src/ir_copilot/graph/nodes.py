@@ -48,10 +48,13 @@ def correlate(context: ToolContext):
             if value
         )
         chunks = retrieve_runbooks(context, query, k=3)
-        github_context = {
-            "recent_commits": github_list_recent_commits(context, limit=10),
-            "recent_issues": github_list_recent_issues(context, limit=10),
-        }
+        try:
+            github_context = {
+                "recent_commits": github_list_recent_commits(context, limit=10),
+                "recent_issues": github_list_recent_issues(context, limit=10),
+            }
+        except Exception:
+            github_context = {"recent_commits": [], "recent_issues": [], "error": "github_unavailable"}
         evidence_pack = {
             "anomaly": anomaly,
             "runbooks": [
@@ -60,14 +63,14 @@ def correlate(context: ToolContext):
             ],
             "github_context": github_context,
         }
+        note = f"correlate: retrieved {len(chunks)} runbook chunks and GitHub context"
+        if not chunks:
+            note += " (runbooks degraded/empty)"
         return {
             "retrieved_chunks": chunks,
             "github_context": github_context,
             "evidence_pack": evidence_pack,
-            "trace_notes": [
-                *state.get("trace_notes", []),
-                f"correlate: retrieved {len(chunks)} runbook chunks and GitHub context",
-            ],
+            "trace_notes": [*state.get("trace_notes", []), note],
         }
 
     return node

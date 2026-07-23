@@ -79,9 +79,16 @@ Langfuse is optional. Set `LANGFUSE_ENABLED=true`, `LANGFUSE_PUBLIC_KEY`, `LANGF
 - GitHub writes are draft-only. There is no auto-merge, deployment, deletion, kubectl, or cloud mutation tool.
 - `GITHUB_DRY_RUN=true` writes Markdown artifacts to `data/outbox/` by default.
 
-## Docker and Railway
+## Live demo / Deploy (Render Free)
 
-For local single-service parity:
+Hosted demos use **one** Render Free Web Service (Docker). The service sleeps after
+~15 minutes idle and may take ~1 minute to wake. Keep `ALLOW_FAKE_LLM=true` and
+`ENABLE_RUNBOOK_INDEX=false` so the demo needs no paid API keys and stays within
+free-tier memory.
+
+Step-by-step: [docs/DEPLOY.md](docs/DEPLOY.md). Blueprint: [`render.yaml`](render.yaml).
+
+Local single-service parity:
 
 ```sh
 cp .env.example .env
@@ -89,27 +96,18 @@ docker compose up --build
 ```
 
 Then open `http://127.0.0.1:8000/` for the bundled dashboard and
-`http://127.0.0.1:8000/health` for the health check. The first boot attempts to
-create the local runbook index. Keep `GITHUB_DRY_RUN=true` for public demos.
-
-Railway can deploy the root `Dockerfile` as one service; `railway.toml` declares
-the `/health` check. Set variables from `.env.example`, including a production
-`API_KEY`; add OpenAI, GitHub, and Langfuse credentials only when intentionally
-using those integrations. See [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) for a
-live walkthrough.
-
-The Dockerfile and static-serving path are implemented, but this environment did
-not have a running Docker daemon, so `docker build` was not verified here.
+`http://127.0.0.1:8000/health` for the health check.
 
 ## Resume-ready bullets
 
 - Built a hybrid incident-response copilot that separates deterministic anomaly detection from LLM diagnosis to reduce hallucination risk.
 - Implemented a fixed LangGraph workflow with local runbook retrieval, Pydantic structured outputs, hard per-run call caps, and draft-only GitHub remediation.
 - Added five golden scenarios and an offline eval harness that measured 5/5 exact matches with the false-alarm path using zero LLM calls.
-- Shipped FastAPI, React/Vite, SQLite persistence, optional Langfuse callbacks, and single-service Docker/Railway packaging with dry-run-first guardrails.
+- Shipped FastAPI, React/Vite, SQLite persistence, optional Langfuse callbacks, and free Render scale-down Docker hosting for keyless demos.
 
 ## Further reading
 
+- [Deploy (Render Free)](docs/DEPLOY.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Decision record](docs/DECISIONS.md)
 - [Demo script](docs/DEMO_SCRIPT.md)

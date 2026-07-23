@@ -91,6 +91,45 @@ class ApiAuthenticationTests(unittest.TestCase):
         self.assertEqual(denied.status_code, 401)
         self.assertEqual(allowed.status_code, 200)
 
+    def test_allow_fake_llm_enables_keyless_production_demo(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            client = TestClient(
+                create_app(
+                    database_path=Path(root) / "runs.sqlite3",
+                    api_settings=ApiSettings(
+                        app_env="production",
+                        api_key="expected-key",
+                        allow_fake_llm=True,
+                    ),
+                )
+            )
+            health = client.get("/health")
+            run = client.post(
+                "/incidents/run",
+                json={"scenario_id": "sc_db_pool", "use_fake_llm": True},
+            )
+
+        self.assertEqual(health.status_code, 200)
+        self.assertEqual(run.status_code, 200)
+        self.assertEqual(run.json()["status"], "completed")
+        self.assertEqual(run.json()["hypothesis"]["root_cause"], "db_connection_pool_exhaustion")
+
+    def test_production_rejects_fake_llm_without_allow_flag(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            client = TestClient(
+                create_app(
+                    database_path=Path(root) / "runs.sqlite3",
+                    api_settings=ApiSettings(app_env="production", api_key="expected-key"),
+                )
+            )
+            denied = client.post(
+                "/incidents/run",
+                headers={"X-API-KEY": "expected-key"},
+                json={"scenario_id": "sc_db_pool", "use_fake_llm": True},
+            )
+
+        self.assertEqual(denied.status_code, 400)
+
 
 class ApiStaticDashboardTests(unittest.TestCase):
     def test_compiled_dashboard_is_served_when_present(self) -> None:

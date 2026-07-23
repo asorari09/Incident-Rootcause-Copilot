@@ -10,6 +10,8 @@ checkpoint before proceeding.
 - `make test` must pass offline.
 - `make run-api`, `make run-web`, `make eval`, and `make index-runbooks` are the
   standard entry points as their phases are implemented.
+- Hosted demos use Render Free (`render.yaml`, `docs/DEPLOY.md`) with
+  `ALLOW_FAKE_LLM=true` and `ENABLE_RUNBOOK_INDEX=false`.
 
 ## Git / phase discipline (mandatory)
 

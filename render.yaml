@@ -1,0 +1,27 @@
+# Render Blueprint: one free Web Service (API + built SPA), sleeps when idle.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: ir-copilot
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: ALLOW_FAKE_LLM
+        value: "true"
+      - key: GITHUB_DRY_RUN
+        value: "true"
+      - key: GITHUB_REPO
+        value: asorari09/Incident-Rootcause-Copilot
+      - key: LANGFUSE_ENABLED
+        value: "false"
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: MAX_LLM_CALLS_PER_RUN
+        value: "3"
+      - key: ENABLE_RUNBOOK_INDEX
+        value: "false"
+      # Leave API_KEY unset for the public SPA demo (ALLOW_FAKE_LLM disables key gating).
+      # Leave OPENAI_API_KEY / GITHUB_TOKEN / Langfuse keys unset for a $0 demo.

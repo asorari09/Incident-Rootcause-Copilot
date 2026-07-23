@@ -148,7 +148,12 @@ def build_router(
             raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="scenario_id is required")
         use_fake_llm = request.use_fake_llm
         if use_fake_llm is None:
-            use_fake_llm = api_settings.app_env == "development"
+            use_fake_llm = api_settings.default_use_fake_llm
+        if use_fake_llm and not api_settings.default_use_fake_llm:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="FakeLLM is disabled in this environment; set ALLOW_FAKE_LLM=true for free demos",
+            )
         try:
             result = run_incident(
                 request.scenario_id,
@@ -157,6 +162,13 @@ def build_router(
             )
         except ValueError as exc:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+        except Exception as exc:
+            if not use_fake_llm and "OPENAI" in str(exc).upper():
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail="Live LLM unavailable; set ALLOW_FAKE_LLM=true for keyless demos",
+                ) from exc
+            raise
         repository.save(result)
         return IncidentRunResponse.model_validate(result)
 

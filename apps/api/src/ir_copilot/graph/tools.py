@@ -23,7 +23,12 @@ def get_anomaly_details(state: dict[str, Any]) -> dict[str, object]:
 
 
 def retrieve_runbooks(context: ToolContext, query: str, k: int = 3) -> list[dict[str, object]]:
+    """Best-effort retrieval; never crash the graph if Chroma/MiniLM is unavailable."""
     if context.retriever is None:
+        return []
+    try:
+        chunks = context.retriever.retrieve(query, top_k=k)
+    except Exception:
         return []
     return [
         {
@@ -33,7 +38,7 @@ def retrieve_runbooks(context: ToolContext, query: str, k: int = 3) -> list[dict
             "headers": getattr(chunk, "headers", ""),
             "content": getattr(chunk, "content", "")[:2400],
         }
-        for chunk in context.retriever.retrieve(query, top_k=k)
+        for chunk in chunks
     ]
 
 
