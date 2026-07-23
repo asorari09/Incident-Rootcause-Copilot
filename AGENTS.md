@@ -37,3 +37,7 @@ checkpoint before proceeding.
 
 Keep code simple and shallow. Put deep design in `END_TO_END_PLAN.md`, not here.
 If the same mistake recurs twice, add a concise rule to the nearest `AGENTS.md`.
+
+The public implementation narrative lives in `docs/` after Phase 9. Keep those
+files grounded in actual commands and measured results; do not claim configured
+live integrations or deployments that have not been verified.
