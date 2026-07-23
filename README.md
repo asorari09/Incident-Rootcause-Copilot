@@ -53,3 +53,37 @@ Langfuse is optional. To enable it, set `LANGFUSE_ENABLED=true` plus
 `LANGFUSE_HOST` in your uncommitted `.env`. Graph runs then include scenario,
 incident, app-version, final status, and LLM-call metadata. Without keys,
 tracing is a no-op.
+
+## Deploy
+
+### Local Docker
+
+Create a local env file without committing it, then build and run the single
+API + dashboard service:
+
+```sh
+cp .env.example .env
+docker compose up --build
+```
+
+Open `http://127.0.0.1:8000/` for the dashboard and
+`http://127.0.0.1:8000/health` for the health check. The first boot attempts to
+build the local MiniLM/Chroma runbook index; the API still starts if that cache
+is unavailable. The compose volume preserves local SQLite, Chroma, and dry-run
+outbox data.
+
+### Railway
+
+1. Create a Railway project from this repository; Railway reads the root
+   `Dockerfile` and `railway.toml` automatically.
+2. Set the variables from `.env.example`: at minimum `APP_ENV=production`, a
+   strong `API_KEY`, `OPENAI_MODEL=gpt-4o-mini`, `MAX_LLM_CALLS_PER_RUN=3`,
+   `LLM_TEMPERATURE=0`, `GITHUB_REPO=owner/name`, and `GITHUB_DRY_RUN=true`.
+   Add `OPENAI_API_KEY` only for live model runs; Langfuse and GitHub tokens are
+   optional.
+3. Set Railway's health check path to `/health` (also declared in
+   `railway.toml`) and deploy the single service on port 8000.
+
+Keep `GITHUB_DRY_RUN=true` for public demos unless you intentionally want to
+create drafts in the configured allowlisted repository. No secrets are baked
+into the image.

@@ -90,3 +90,22 @@ class ApiAuthenticationTests(unittest.TestCase):
 
         self.assertEqual(denied.status_code, 401)
         self.assertEqual(allowed.status_code, 200)
+
+
+class ApiStaticDashboardTests(unittest.TestCase):
+    def test_compiled_dashboard_is_served_when_present(self) -> None:
+        with tempfile.TemporaryDirectory() as root:
+            root_path = Path(root)
+            web_dist = root_path / "web_dist"
+            web_dist.mkdir()
+            (web_dist / "index.html").write_text("<html>dashboard</html>", encoding="utf-8")
+            client = TestClient(
+                create_app(
+                    database_path=root_path / "runs.sqlite3",
+                    api_settings=ApiSettings(),
+                    web_dist=web_dist,
+                )
+            )
+
+            self.assertIn("dashboard", client.get("/").text)
+            self.assertEqual(client.get("/health").json(), {"status": "ok"})

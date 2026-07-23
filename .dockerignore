@@ -1,0 +1,15 @@
+.git
+.venv
+.env
+node_modules
+apps/web/node_modules
+apps/web/dist
+**/__pycache__
+**/*.py[cod]
+*.sqlite3
+data/outbox/*
+data/chroma/*
+evals/out/*
+.DS_Store
+.idea
+.vscode

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from collections.abc import Sequence
 from typing import Any
@@ -20,8 +21,9 @@ class MiniLMEmbeddingFunction:
         if self._model is None:
             from sentence_transformers import SentenceTransformer
 
+            allow_download = os.getenv("IR_COPILOT_ALLOW_MODEL_DOWNLOAD", "false").lower() == "true"
             self._model = SentenceTransformer(
-                self.model_name, device="cpu", local_files_only=True
+                self.model_name, device="cpu", local_files_only=not allow_download
             )
         return self._model.encode(list(input), normalize_embeddings=True).tolist()
 
