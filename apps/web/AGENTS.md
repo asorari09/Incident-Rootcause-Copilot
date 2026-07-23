@@ -9,3 +9,6 @@ TypeScript for a small operator dashboard, not a design exercise.
   status, and cost only when their backend phases exist.
 - Do not add LLM calls, API secrets, or direct GitHub/infra mutation from the
   browser. Keep dependencies and UI complexity minimal.
+- Use `VITE_API_BASE_URL` only for an explicit API origin. Leave it unset for
+  local development: Vite proxies the existing API routes to port 8000, so
+  `make run-api` plus `make run-web` works without browser CORS exceptions.

@@ -22,3 +22,17 @@ make run-web
 
 The API starts at `http://127.0.0.1:8000`; its OpenAPI UI is available at `/docs`.
 In development, `POST /incidents/run` defaults to the offline fake LLM path.
+
+## Demo dashboard
+
+Start the API in one terminal and the Vite dashboard in another:
+
+```sh
+make run-api
+make run-web
+```
+
+Open the Vite URL (normally `http://127.0.0.1:5173`), select `sc_db_pool`, then
+click **Inject** and **Run incident**. The dashboard uses Vite's local API proxy
+by default. Set `VITE_API_BASE_URL` only when pointing the dashboard at an
+explicit API origin.
