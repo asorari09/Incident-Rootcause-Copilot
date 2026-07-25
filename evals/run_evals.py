@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
 from ir_copilot.graph.run import fake_llm_for_scenario, run_incident
-
 from scorers import score_run
 
 ROOT = Path(__file__).resolve().parents[1]

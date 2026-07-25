@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -33,7 +33,7 @@ class ScenarioEngine:
     def inject(self, scenario_id: str, store: MetricsStore) -> ScenarioInjection:
         definition = self._load(scenario_id)
         store.clear()
-        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        start = datetime(2026, 1, 1, tzinfo=UTC)
         for metric, spec in definition["metrics"].items():
             for offset, value in enumerate(self._series(spec)):
                 store.append(metric, start + timedelta(minutes=offset), value)

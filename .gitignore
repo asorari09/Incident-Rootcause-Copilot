@@ -18,6 +18,7 @@ build/
 # Node
 node_modules/
 apps/web/dist/
+apps/web/*.tsbuildinfo
 
 # Runtime data
 data/chroma/*

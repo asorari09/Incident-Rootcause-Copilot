@@ -28,7 +28,7 @@ def retrieve_runbooks(context: ToolContext, query: str, k: int = 3) -> list[dict
         return []
     try:
         chunks = context.retriever.retrieve(query, top_k=k)
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         return []
     return [
         {

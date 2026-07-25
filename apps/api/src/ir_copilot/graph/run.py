@@ -31,7 +31,8 @@ def run_incident(
     """Invoke the graph; callers can supply offline dependencies for tests."""
     engine = ScenarioEngine()
     store = metrics_store or MetricsStore()
-    injection = engine.inject(scenario_id, store) if scenario_id else None
+    if scenario_id:
+        engine.inject(scenario_id, store)
     anomaly = AnomalyDetector().evaluate(store)
     settings = dependencies.settings if dependencies else AppSettings.from_env()
     if dependencies is None:
@@ -87,7 +88,7 @@ def _default_retriever() -> RunbookRetriever | None:
         return RunbookRetriever(
             persist_dir=repo_root / "data/chroma", embedding_function=MiniLMEmbeddingFunction()
         )
-    except Exception:
+    except Exception:  # noqa: BLE001 - retrieval is optional for a runnable incident result
         return None
 
 

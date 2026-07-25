@@ -47,7 +47,7 @@ class MiniLMEmbeddingFunction:
         return {"model_name": self.model_name}
 
     @staticmethod
-    def build_from_config(config: dict[str, Any]) -> "MiniLMEmbeddingFunction":
+    def build_from_config(config: dict[str, Any]) -> MiniLMEmbeddingFunction:
         del config
         return MiniLMEmbeddingFunction()
 
@@ -89,5 +89,5 @@ class HashEmbeddingFunction:
         return {"dimensions": self.dimensions}
 
     @staticmethod
-    def build_from_config(config: dict[str, Any]) -> "HashEmbeddingFunction":
+    def build_from_config(config: dict[str, Any]) -> HashEmbeddingFunction:
         return HashEmbeddingFunction(dimensions=int(config["dimensions"]))

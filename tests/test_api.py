@@ -7,7 +7,6 @@ import unittest
 from pathlib import Path
 
 from fastapi.testclient import TestClient
-
 from ir_copilot.api.settings import ApiSettings
 from ir_copilot.main import create_app
 

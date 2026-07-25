@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import os
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Mapping
 
 _REPOSITORY_PATTERN = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 
@@ -23,7 +23,7 @@ class GitHubSettings:
     outbox_dir: Path = Path("data/outbox")
 
     @classmethod
-    def from_env(cls, environ: Mapping[str, str] | None = None) -> "GitHubSettings":
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> GitHubSettings:
         values = os.environ if environ is None else environ
         repository = values.get("GITHUB_REPO", "youruser/incident-response-copilot")
         if not _REPOSITORY_PATTERN.fullmatch(repository):

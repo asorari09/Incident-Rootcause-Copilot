@@ -53,7 +53,7 @@ def correlate(context: ToolContext):
                 "recent_commits": github_list_recent_commits(context, limit=10),
                 "recent_issues": github_list_recent_issues(context, limit=10),
             }
-        except Exception:
+        except (OSError, RuntimeError, ValueError):
             github_context = {"recent_commits": [], "recent_issues": [], "error": "github_unavailable"}
         evidence_pack = {
             "anomaly": anomaly,
@@ -169,7 +169,7 @@ def _structured_call(
             notes.append(f"{task}: structured output invalid on attempt {attempt + 1}")
             if attempt == 1:
                 return None, calls_used, f"{task}_structured_output_failed: {exc}", notes
-        except Exception as exc:  # provider errors fail softly and never escape the graph
+        except Exception as exc:  # noqa: BLE001 - provider SDK exceptions are intentionally fail-soft
             return None, calls_used, f"{task}_failed: {exc}", notes
     raise AssertionError("unreachable")
 

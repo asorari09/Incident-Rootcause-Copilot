@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 ALLOWED_OPENAI_MODELS = {"gpt-4o-mini"}
 
@@ -30,7 +30,7 @@ class AppSettings:
             raise ValueError("LLM_TEMPERATURE must be 0 for incident reasoning")
 
     @classmethod
-    def from_env(cls, environ: Mapping[str, str] | None = None) -> "AppSettings":
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> AppSettings:
         values = os.environ if environ is None else environ
         return cls(
             openai_api_key=values.get("OPENAI_API_KEY") or None,

@@ -2,7 +2,11 @@
 
 from __future__ import annotations
 
+import logging
+
 from ir_copilot.config import AppSettings
+
+logger = logging.getLogger(__name__)
 
 
 def langfuse_callbacks(settings: AppSettings) -> list[object]:
@@ -16,7 +20,8 @@ def langfuse_callbacks(settings: AppSettings) -> list[object]:
         from langfuse.langchain import CallbackHandler
 
         return [CallbackHandler(public_key=settings.langfuse_public_key)]
-    except ImportError:
+    except Exception:
+        logger.debug("Langfuse callback initialization failed", exc_info=True)
         return []
 
 
@@ -35,4 +40,4 @@ def finalize_langfuse_run(callbacks: list[object], result: dict[str, object]) ->
         try:
             client.update_current_span(metadata=metadata)
         except Exception:
-            continue
+            logger.debug("Langfuse final metadata update failed", exc_info=True)

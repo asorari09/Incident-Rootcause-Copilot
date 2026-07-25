@@ -9,7 +9,7 @@ from pathlib import Path
 
 from ir_copilot.config import AppSettings
 from ir_copilot.github import GitHubClient, GitHubSettings
-from ir_copilot.graph.build import GraphDependencies, build_graph
+from ir_copilot.graph.build import GraphDependencies
 from ir_copilot.graph.llm import FakeLLM
 from ir_copilot.graph.run import run_incident
 from ir_copilot.graph.tools import ToolContext

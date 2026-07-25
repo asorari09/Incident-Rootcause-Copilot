@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import unittest
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from ir_copilot.detection import AnomalyDetector, MetricsStore
@@ -13,7 +13,7 @@ from ir_copilot.scenarios import ScenarioEngine
 class MetricsStoreTests(unittest.TestCase):
     def test_append_and_window_query(self) -> None:
         store = MetricsStore()
-        start = datetime(2026, 1, 1, tzinfo=timezone.utc)
+        start = datetime(2026, 1, 1, tzinfo=UTC)
         for offset in range(3):
             store.append("error_rate", start + timedelta(minutes=offset), offset / 100)
 

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Mapping
 
 
 @dataclass(frozen=True)
@@ -14,7 +14,7 @@ class ApiSettings:
     allow_fake_llm: bool = False
 
     @classmethod
-    def from_env(cls, environ: Mapping[str, str] | None = None) -> "ApiSettings":
+    def from_env(cls, environ: Mapping[str, str] | None = None) -> ApiSettings:
         values = os.environ if environ is None else environ
         return cls(
             app_env=values.get("APP_ENV", "development"),
