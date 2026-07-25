@@ -2,121 +2,122 @@
 
 **Detect with stats. Diagnose with agents. Remediate with humans.**
 
-IR-Copilot is a human-in-the-loop incident-response copilot. A deterministic detector decides whether a synthetic metric anomaly is real; a fixed, budget-capped LangGraph workflow then retrieves runbook context, produces a structured hypothesis, and drafts a GitHub issue or local dry-run artifact for human review.
+[Live demo](https://ir-copilot.onrender.com) · [Interview guide](docs/INTERVIEW_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md)
 
-It is intentionally not an auto-remediator, a Datadog replacement, or a free-form multi-agent demo.
+> Free Render demo may take ~1 minute to wake after idle.
 
-## Why it exists
+---
 
-During an outage, engineers have to connect metrics, recent changes, known runbooks, and the incident communication trail under time pressure. IR-Copilot demonstrates a safer division of labor: statistics decide *whether* something is abnormal, and the model helps explain tool-grounded evidence without executing infrastructure changes.
+## Executive summary
 
-## Architecture
+On-call engineers still stitch metrics, runbooks, and tickets by hand under time pressure. **IR-Copilot** automates the safe middle of that loop:
 
-```text
-React/Vite dashboard → FastAPI → detector gate → fixed LangGraph
-                                      ├→ local MiniLM + Chroma runbooks
-                                      └→ draft-only GitHub client / local outbox
+1. **Stats decide** if something is actually anomalous (no LLM guessing at spikes)
+2. **A fixed LangGraph pipeline** retrieves runbooks, forms a structured root-cause hypothesis, and drafts a GitHub issue
+3. **A human reviews** — never auto-merge, never infra mutation
+
+Built for entry-level FDE / Applied AI storytelling: integrations, guardrails, evals, and cost discipline — not an unbounded agent toy.
+
+| | |
+|---|---|
+| **Stack** | FastAPI · LangGraph · React/Vite · Chroma · SQLite |
+| **LLM** | `gpt-4o-mini` only · ≤3 calls/run · FakeLLM for keyless demos |
+| **Evals** | `5/5` golden scenarios · noise path uses **0** LLM calls |
+| **Deploy** | Single Docker service on [Render Free](https://ir-copilot.onrender.com) |
+
+---
+
+## System design
+
+```mermaid
+flowchart TB
+  subgraph UI["Operator dashboard"]
+    DASH["React + Vite<br/>inject scenario · charts · trace · draft link"]
+  end
+
+  subgraph API["FastAPI"]
+    ROUTES["/scenarios · /incidents/run · /metrics"]
+    DB[("SQLite runs")]
+  end
+
+  subgraph DET["Deterministic layer — $0 tokens"]
+    SCEN["ScenarioEngine<br/>synthetic metrics"]
+    DETR["AnomalyDetector<br/>z-score · %Δ · composites"]
+  end
+
+  subgraph AGENT["LangGraph — fixed edges, no supervisor"]
+    GATE{"gate_on_anomaly"}
+    CORR["correlate<br/>runbooks + GitHub context"]
+    HYP["hypothesize<br/>1 structured LLM call"]
+    REM["remediate<br/>1 structured LLM call"]
+  end
+
+  RAG[("Chroma + MiniLM<br/>runbooks")]
+  GH["GitHub client<br/>draft issue only / dry-run outbox"]
+
+  DASH -->|REST| ROUTES
+  ROUTES --> SCEN --> DETR
+  DETR --> GATE
+  GATE -->|not high| SKIP["END · skipped · 0 LLM calls"]
+  GATE -->|high severity| CORR
+  CORR --> RAG
+  CORR --> HYP --> REM --> GH
+  ROUTES --> DB
+  REM --> DB
 ```
 
-The full diagram and sequence are in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+**Core idea:** the model never answers “is this a spike?” — only “given this grounded evidence, what is the likely cause and draft?”
+
+---
+
+## Pipeline
+
+| Step | Who | LLM? | Output |
+|---|---|---|---|
+| Inject scenario | Dashboard / API | No | Metric series |
+| Detect | `AnomalyDetector` | No | Severity + rule id |
+| Gate | LangGraph | No | Skip or continue |
+| Correlate | Tools | No* | Evidence pack (runbooks + GH context) |
+| Hypothesize | Structured output | **1 call** | Root cause JSON |
+| Remediate | Structured output + GH tool | **1 call** | Draft issue / outbox markdown |
+
+\*Correlation is tool orchestration; FakeLLM demos skip loading MiniLM to stay memory-light on free tier.
+
+---
 
 ## Quickstart
 
-Requirements: Python 3.12+, [uv](https://docs.astral.sh/uv/), and Node/npm.
-
 ```sh
-make install
-make test
-make run-api
+make install && make test
+make run-api    # :8000
+make run-web    # :5173 — or open the live demo
 ```
 
-In a second terminal:
-
-```sh
-make run-web
-```
-
-Open `http://127.0.0.1:5173`, select `sc_db_pool`, click **Inject**, then **Run incident**. Development uses the offline fake LLM path and Vite proxies API calls to `http://127.0.0.1:8000`. The API OpenAPI UI is at `http://127.0.0.1:8000/docs`.
-
-To index runbooks with the local MiniLM model (when cached/available):
-
-```sh
-make index-runbooks
-```
-
-## Demo scenarios
-
-| Scenario | Expected result |
-|---|---|
-| `sc_db_pool` | `db_connection_pool_exhaustion` |
-| `sc_memory_leak` | `memory_leak_after_deploy` |
-| `sc_bad_deploy` | `regressive_deploy` |
-| `sc_dependency_outage` | `upstream_dependency_outage` |
-| `sc_noise_false_alarm` | skipped; no root cause |
-
-## Evals and observability
+Select `sc_db_pool` → **Inject** → **Run**. Noise scenario `sc_noise_false_alarm` should show `skipped` with `llm_calls=0`.
 
 ```sh
 make eval
+# evals PASS: 5/5 exact, noise_skip=True, mean_cost=$0.0000
 ```
 
-Latest measured offline result:
-
-```text
-evals PASS: 5/5 exact, noise_skip=True, mean_cost=$0.0000
-```
-
-This result uses `FakeLLM`, so the zero cost is an offline-test result, not a claim about a live OpenAI bill. Live runs are restricted to `gpt-4o-mini`, temperature 0, and no more than three LLM attempts; the golden live budget is `$0.03/run`. Local MiniLM embeddings have no API embedding cost.
-
-Langfuse is optional. Set `LANGFUSE_ENABLED=true`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`, and optionally `LANGFUSE_HOST` in an uncommitted `.env` to emit configured traces. Without keys, callbacks are no-ops.
+---
 
 ## Guardrails
 
-- The anomaly gate can skip the graph entirely; the noise scenario uses zero LLM calls.
-- The graph is fixed, with no supervisor or autonomous agent loop.
-- Prompts are grounded in compact detector/RAG/GitHub evidence and structured with Pydantic.
-- Only `gpt-4o-mini` is allowed; `MAX_LLM_CALLS_PER_RUN <= 3` is enforced.
-- GitHub writes are draft-only. There is no auto-merge, deployment, deletion, kubectl, or cloud mutation tool.
-- `GITHUB_DRY_RUN=true` writes Markdown artifacts to `data/outbox/` by default.
+- No supervisor agent / unbounded loops
+- Draft-only GitHub (`GITHUB_DRY_RUN=true` by default) — no merge, deploy, kubectl, or cloud mutation tools
+- Model allowlist + hard call budget
+- Offline tests with FakeLLM; hosted demo needs **no paid API keys**
 
-## Live demo / Deploy (Render Free)
+---
 
-Hosted demos use **one** Render Free Web Service (Docker). The service sleeps after
-~15 minutes idle and may take ~1 minute to wake. Keep `ALLOW_FAKE_LLM=true` and
-`ENABLE_RUNBOOK_INDEX=false` so the demo needs no paid API keys and stays within
-free-tier memory.
+## Docs
 
-**Live demo:** [https://ir-copilot.onrender.com](https://ir-copilot.onrender.com)
-
-The first request after an idle spin-down can take about a minute while Render
-wakes the free instance. Once awake, the dashboard serves the same keyless
-FakeLLM + dry-run GitHub flow used by the local demo.
-
-Step-by-step: [docs/DEPLOY.md](docs/DEPLOY.md). Blueprint: [`render.yaml`](render.yaml).
-
-Local single-service parity:
-
-```sh
-cp .env.example .env
-docker compose up --build
-```
-
-Then open `http://127.0.0.1:8000/` for the bundled dashboard and
-`http://127.0.0.1:8000/health` for the health check.
-
-## Resume-ready bullets
-
-- Built a hybrid incident-response copilot that separates deterministic anomaly detection from LLM diagnosis to reduce hallucination risk.
-- Implemented a fixed LangGraph workflow with local runbook retrieval, Pydantic structured outputs, hard per-run call caps, and draft-only GitHub remediation.
-- Added five golden scenarios and an offline eval harness that measured 5/5 exact matches with the false-alarm path using zero LLM calls.
-- Shipped FastAPI, React/Vite, SQLite persistence, optional Langfuse callbacks, and free Render scale-down Docker hosting for keyless demos.
-
-## Further reading
-
-- [Deploy (Render Free)](docs/DEPLOY.md)
-- [Architecture](docs/ARCHITECTURE.md)
-- [Decision record](docs/DECISIONS.md)
-- [Demo script](docs/DEMO_SCRIPT.md)
-- [Interview guide](docs/INTERVIEW_GUIDE.md)
-- [Build retrospective](docs/RETROSPECTIVE.md)
-- [Authoritative implementation plan](END_TO_END_PLAN.md)
+| Doc | Purpose |
+|---|---|
+| [DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) | 3- and 8-minute walkthroughs |
+| [INTERVIEW_GUIDE.md](docs/INTERVIEW_GUIDE.md) | Resume / interview answers |
+| [ARCHITECTURE.md](docs/ARCHITECTURE.md) | Deeper diagrams |
+| [DECISIONS.md](docs/DECISIONS.md) | ADR / tradeoffs |
+| [DEPLOY.md](docs/DEPLOY.md) | Render Free hosting |
+| [RETROSPECTIVE.md](docs/RETROSPECTIVE.md) | What broke and how we fixed it |
