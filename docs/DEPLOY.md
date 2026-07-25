@@ -3,7 +3,7 @@
 ## Target: Render Free Web Service
 
 One Docker service serves FastAPI **and** the built React dashboard.
-No Vercel. No paid Railway.
+No separate frontend service is required.
 
 ### Behavior on Free
 

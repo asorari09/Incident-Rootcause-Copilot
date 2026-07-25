@@ -68,4 +68,4 @@ sequenceDiagram
 
 ## Deployment boundary
 
-The root `Dockerfile` builds `apps/web` and copies its `dist` output to `/app/web_dist`; `main.py` serves it only when present. API routes are registered first. The first container boot attempts a local Chroma build, but the API continues if the local model cache is unavailable. `railway.toml` uses a single Docker service and `/health`.
+The root `Dockerfile` builds `apps/web` and copies its `dist` output to `/app/web_dist`; `main.py` serves it only when present. API routes are registered first. The first container boot can skip local Chroma indexing for the free demo. `render.yaml` configures the single Docker service and `/health` check used by Render.
