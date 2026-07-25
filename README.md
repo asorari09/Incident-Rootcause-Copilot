@@ -86,6 +86,12 @@ Hosted demos use **one** Render Free Web Service (Docker). The service sleeps af
 `ENABLE_RUNBOOK_INDEX=false` so the demo needs no paid API keys and stays within
 free-tier memory.
 
+**Live demo:** [https://ir-copilot.onrender.com](https://ir-copilot.onrender.com)
+
+The first request after an idle spin-down can take about a minute while Render
+wakes the free instance. Once awake, the dashboard serves the same keyless
+FakeLLM + dry-run GitHub flow used by the local demo.
+
 Step-by-step: [docs/DEPLOY.md](docs/DEPLOY.md). Blueprint: [`render.yaml`](render.yaml).
 
 Local single-service parity:
