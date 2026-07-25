@@ -1,5 +1,5 @@
 # Build the small React operator dashboard.
-FROM node:22-alpine AS web-build
+FROM node:24-alpine AS web-build
 WORKDIR /app/apps/web
 COPY apps/web/package.json apps/web/package-lock.json ./
 RUN npm ci
