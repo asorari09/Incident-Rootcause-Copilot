@@ -19,7 +19,7 @@ This is the implemented ADR-style version of Decision Log D1–D20.
 | D13 | API | FastAPI | `main.py`, `api/routes.py` |
 | D14 | Web | React + Vite + TypeScript | `apps/web` |
 | D15 | Run persistence | SQLite | `api/store.py` |
-| D16 | Deploy | Single Docker service, Railway-ready | `Dockerfile`, `railway.toml` |
+| D16 | Deploy | Single Docker service on Render Free (scale-down) | `Dockerfile`, `render.yaml`, live at https://ir-copilot.onrender.com |
 | D17 | Packages | uv for Python, npm for web | `pyproject.toml`, `apps/web/package.json` |
 | D18 | Cost cap | Max 3 LLM attempts/run | `AppSettings` and graph tests |
 | D19 | CI network | Offline tests with fake/dry-run paths | `make test`, `FakeLLM` |

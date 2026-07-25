@@ -24,14 +24,14 @@ The normal graph path intentionally has two LLM nodes. The third allowed call is
 
 The frontend initially had no backend boundary. Vite proxy rules now route the small API surface to port 8000, so local development does not need browser CORS configuration. The dashboard deliberately says “Offline fake LLM · dry-run GitHub” rather than implying a live production integration.
 
-### Docker verification gap
+### Docker / Render hosting
 
-The Dockerfile, compose configuration, static SPA serving test, Python tests, and web build all passed. `docker build -t ir-copilot .` could not run here because Docker was installed but the daemon socket was unavailable. This is recorded rather than presented as a successful image build. The next verification step is to start Docker Desktop, build the image, run it with `.env`, and hit `/health` and `/`.
+Local `docker build` was blocked once by a missing Docker daemon, but the same Dockerfile now runs on Render Free as a single service: https://ir-copilot.onrender.com. Free-tier constraints forced two deliberate choices: skip MiniLM boot indexing (`ENABLE_RUNBOOK_INDEX=false`) and keep `ALLOW_FAKE_LLM=true` so the public demo needs no paid keys and stays within ~512 MB RAM. Cold starts after idle spin-down take about a minute.
 
 ### Observability boundary
 
-Langfuse is implemented as an optional callback. Without configured keys it is a no-op, which preserves offline tests. A production demo still needs actual Langfuse credentials and a visible trace before claiming cloud observability evidence.
+Langfuse is implemented as an optional callback. Without configured keys it is a no-op, which preserves offline tests. A stronger portfolio claim still needs actual Langfuse credentials and a visible trace before saying “cloud observability evidence.”
 
 ## What I would improve next
 
-Add customer-specific metric adapters and eval cases before expanding autonomy. Then verify the container on a running Docker daemon, configure an intentionally scoped GitHub App, and collect a real Langfuse trace with a non-secret demo project.
+Add customer-specific metric adapters (e.g. Prometheus) and more eval cases before expanding autonomy. Optionally configure a scoped GitHub App / live draft issues and a real Langfuse project for screenshots — without changing the draft-only guardrails.

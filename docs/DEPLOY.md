@@ -37,8 +37,14 @@ No Vercel. No paid Railway.
 
 Leave unset: `OPENAI_API_KEY`, `GITHUB_TOKEN`, Langfuse keys, `API_KEY` (public SPA demo).
 
-5. Deploy. Open `https://<service>.onrender.com/`.
+5. Deploy. Open the service URL (live demo: https://ir-copilot.onrender.com).
 6. Select `sc_db_pool` → **Inject** → **Run incident**.
+
+### Live demo
+
+**https://ir-copilot.onrender.com**
+
+Verified: `/health`, `/scenarios`, SPA, `sc_db_pool` Inject+Run with FakeLLM and dry-run GitHub drafts. Free tier may sleep after ~15 minutes idle; the next request can take about a minute to wake.
 
 ### CLI (optional)
 
@@ -55,8 +61,8 @@ Exact CLI subcommands vary by CLI version; prefer the dashboard Blueprint flow i
 ### Smoke checks
 
 ```sh
-curl -sS https://<service>.onrender.com/health
-curl -sS https://<service>.onrender.com/scenarios
+curl -sS https://ir-copilot.onrender.com/health
+curl -sS https://ir-copilot.onrender.com/scenarios
 ```
 
 Browser: run `sc_db_pool`, then `sc_noise_false_alarm` (expect `skipped`, `llm_calls=0`).

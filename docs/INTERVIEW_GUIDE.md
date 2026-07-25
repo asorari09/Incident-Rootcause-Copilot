@@ -36,7 +36,7 @@ The LLM never decides whether a spike is an incident. It receives a compact Evid
 
 ## What problems did you hit, and how did you solve them?
 
-The build was phased so each checkpoint remained runnable. I added `FakeLLM` because detector, graph, GitHub, and API tests must run offline without token spend. Chroma's current embedding-function protocol required explicit query/document methods and local deterministic test embeddings. The dashboard uses Vite proxying to avoid local CORS friction. Docker packaging was written and unit-tested around static serving, but this machine did not have a running Docker daemon, so an image build could not be verified here. Details are in `docs/RETROSPECTIVE.md`.
+The build was phased so each checkpoint remained runnable. I added `FakeLLM` because detector, graph, GitHub, and API tests must run offline without token spend. Chroma's current embedding-function protocol required explicit query/document methods and local deterministic test embeddings. The dashboard uses Vite proxying to avoid local CORS friction. Docker packaging ships on Render Free as a single service (API + SPA) at https://ir-copilot.onrender.com with `ALLOW_FAKE_LLM=true` so demos need no paid keys. Details are in `docs/RETROSPECTIVE.md`.
 
 ## How did you control cost?
 

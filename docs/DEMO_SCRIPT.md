@@ -2,7 +2,11 @@
 
 ## Before the demo
 
-From the repository root, use two terminals:
+**Hosted (recommended for interviews):** open
+[https://ir-copilot.onrender.com](https://ir-copilot.onrender.com).
+If the free instance was idle, wait ~1 minute for cold start, then proceed.
+
+**Local alternative:** from the repository root, use two terminals:
 
 ```sh
 make run-api
@@ -39,4 +43,4 @@ Use the 3-minute script, then add:
 4. **RAG and evidence (60s).** Explain `data/runbooks`, `rag/indexer.py`, Chroma, local MiniLM, top-k=3, and the compact EvidencePack.
 5. **Cost and evals (60s).** Show `make eval`; explain fake cost is exactly zero for offline CI, while live configuration is restricted to mini and the golden live budget is $0.03/run.
 6. **Integration boundary (60s).** Open an outbox Markdown artifact. It contains incident ID, labels, proposed content, and a reasoning trace. Explain that a real PAT is optional and scoped to one repo.
-7. **Deployment (40s).** Show `Dockerfile`, `docker-compose.yml`, and `railway.toml`. State honestly that this machine's Docker daemon was unavailable during verification.
+7. **Deployment (40s).** Show `Dockerfile`, `render.yaml`, and the live Render Free URL. Mention scale-to-sleep after idle and the ~1 minute cold start — a deliberate free-tier tradeoff.

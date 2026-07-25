@@ -802,7 +802,7 @@ Include polished answers for:
 | D13 | API | FastAPI |
 | D14 | Web | React + Vite + TS |
 | D15 | Persist runs | SQLite |
-| D16 | Deploy | Docker on Railway (single service preferred) |
+| D16 | Deploy | Docker on Render Free (single service; sleeps when idle) |
 | D17 | Package manager | uv (Python), pnpm or npm (web) |
 | D18 | Cost cap | ≤3 LLM calls/run; model allowlist |
 | D19 | CI network | Tests must pass offline with dry-run |
